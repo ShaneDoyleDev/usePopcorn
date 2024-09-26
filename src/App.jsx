@@ -55,10 +55,16 @@ function NavBar() {
     <nav className="nav-bar">
       <Logo />
       <Search />
-      <p className="num-results">
-        Found <strong>X</strong> results
-      </p>
+      <ResultsTotal />
     </nav>
+  );
+}
+
+function ResultsTotal() {
+  return (
+    <p className="num-results">
+      Found <strong>X</strong> results
+    </p>
   );
 }
 
