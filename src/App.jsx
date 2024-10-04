@@ -204,16 +204,28 @@ export default function App() {
 
   useEffect(function () {
     async function fetchMovies() {
-      setIsLoading(true);
-      const response = await fetch(
-        `http://www.omdbapi.com/?apikey=f18fa495&s=${query}`
-      );
-      const data = await response.json();
-      setMovies(data.Search);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          `http://www.omdbapi.com/?apikey=f18fa495&s=${query}`
+        );
+        if (!response.ok)
+          throw new Error("Something went wrong with fetching movies");
+
+        const data = await response.json();
+        setMovies(data.Search);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchMovies();
   }, []);
+
+  function Loader() {
+    return <p className="loader">Loading</p>;
+  }
 
   return (
     <>
@@ -224,7 +236,11 @@ export default function App() {
 
       <Main>
         <Box>
-          <MovieList movies={movies} isLoading={isLoading} />
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <MovieList movies={movies} isLoading={isLoading} />
+          )}
         </Box>
         <Box>
           <WatchedMoviesSummary watched={watched} />
