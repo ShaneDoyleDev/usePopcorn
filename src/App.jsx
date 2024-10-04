@@ -62,7 +62,7 @@ function NavBar({ children }) {
 function ResultsTotal({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies?.length || 0}</strong> results
     </p>
   );
 }
@@ -195,10 +195,23 @@ function Main({ children }) {
   return <main className="main">{children}</main>;
 }
 
+function Loader() {
+  return <p className="loader">Loading</p>;
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>❌</span> {message}
+    </p>
+  );
+}
+
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const query = "interstellar";
 
@@ -206,26 +219,25 @@ export default function App() {
     async function fetchMovies() {
       try {
         setIsLoading(true);
+
         const response = await fetch(
           `http://www.omdbapi.com/?apikey=f18fa495&s=${query}`
         );
         if (!response.ok)
-          throw new Error("Something went wrong with fetching movies");
+          throw new Error("Something went wrong with fetching the movies");
 
         const data = await response.json();
+        if (data.Response === "False") throw new Error("Movie not found");
+
         setMovies(data.Search);
       } catch (error) {
-        console.log(error.message);
+        setErrorMessage(error.message);
       } finally {
         setIsLoading(false);
       }
     }
     fetchMovies();
   }, []);
-
-  function Loader() {
-    return <p className="loader">Loading</p>;
-  }
 
   return (
     <>
@@ -236,9 +248,11 @@ export default function App() {
 
       <Main>
         <Box>
-          {isLoading ? (
-            <Loader />
-          ) : (
+          {isLoading && <Loader />}
+          {!isLoading && errorMessage && (
+            <ErrorMessage message={errorMessage} />
+          )}
+          {!isLoading && !errorMessage && (
             <MovieList movies={movies} isLoading={isLoading} />
           )}
         </Box>
