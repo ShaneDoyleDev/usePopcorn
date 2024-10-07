@@ -88,21 +88,21 @@ function Search({ query, setQuery }) {
   );
 }
 
-function MovieList({ movies, onMovieClick }) {
+function MovieList({ movies, onMovieSelect }) {
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie key={movie.imdbID} movie={movie} onMovieClick={onMovieClick} />
+        <Movie key={movie.imdbID} movie={movie} onMovieSelect={onMovieSelect} />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie, onMovieClick }) {
+function Movie({ movie, onMovieSelect }) {
   return (
     <li
       onClick={() => {
-        onMovieClick(movie.imdbID);
+        onMovieSelect(movie.imdbID);
       }}
     >
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
@@ -209,8 +209,15 @@ function ErrorMessage({ message }) {
   );
 }
 
-function MovieDetails({ movieId }) {
-  return <div className="details">{movieId}</div>;
+function MovieDetails({ movieId, onMovieClose }) {
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={onMovieClose}>
+        &larr;
+      </button>
+      {movieId}
+    </div>
+  );
 }
 
 export default function App() {
@@ -221,8 +228,14 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  function handleMovieClick(selectedMovieId) {
-    setSelectedMovieId(selectedMovieId);
+  function handleMovieSelect(movieId) {
+    movieId === selectedMovieId
+      ? setSelectedMovieId(null)
+      : setSelectedMovieId(movieId);
+  }
+
+  function handleMovieClose() {
+    setSelectedMovieId(null);
   }
 
   useEffect(
@@ -277,13 +290,16 @@ export default function App() {
             <MovieList
               movies={movies}
               isLoading={isLoading}
-              onMovieClick={handleMovieClick}
+              onMovieSelect={handleMovieSelect}
             />
           )}
         </Box>
         <Box>
           {selectedMovieId ? (
-            <MovieDetails movieId={selectedMovieId} />
+            <MovieDetails
+              movieId={selectedMovieId}
+              onMovieClose={handleMovieClose}
+            />
           ) : (
             <>
               <WatchedMoviesSummary watched={watched} />
