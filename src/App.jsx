@@ -235,6 +235,18 @@ function MovieDetails({
     getMovieDetails();
   }, [movieId]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onMovieClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onMovieClose]);
+
   return (
     <div className="details">
       {isLoading ? (
