@@ -114,8 +114,8 @@ function WatchedMoviesList({ watchedMovies }) {
 function WatchedMovie({ movie }) {
   return (
     <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
+      <img src={movie.poster} alt={`${movie.title} poster`} />
+      <h3>{movie.title}</h3>
       <div>
         <p>
           <span>⭐️</span>
@@ -163,8 +163,9 @@ function ErrorMessage({ message }) {
   );
 }
 
-function MovieDetails({ movieId, onMovieClose }) {
+function MovieDetails({ movieId, onMovieClose, onAddWatchedMovie }) {
   const [movie, setmovie] = useState({});
+  const [userRating, setUserRating] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -179,6 +180,21 @@ function MovieDetails({ movieId, onMovieClose }) {
     Director: director,
     Genre: genre,
   } = movie;
+
+  function handelAddMovie() {
+    const newWatchedMovie = {
+      imdbID: movieId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+      userRating,
+    };
+
+    onAddWatchedMovie(newWatchedMovie);
+    onMovieClose();
+  }
 
   useEffect(() => {
     async function getMovieDetails() {
@@ -219,7 +235,12 @@ function MovieDetails({ movieId, onMovieClose }) {
 
           <section>
             <div className="rating">
-              <StarRating maxRating={10} />
+              <StarRating maxRating={10} onSetRating={setUserRating} />
+              {userRating && (
+                <button className="btn-add" onClick={handelAddMovie}>
+                  + Add To List
+                </button>
+              )}
             </div>
             <p>
               <em>{plot}</em>
@@ -251,8 +272,8 @@ export default function App() {
     setSelectedMovieId(null);
   }
 
-  function handleAddWatchedMovies() {
-    setWatchedMovies();
+  function handleAddWatchedMovie(movie) {
+    setWatchedMovies((prevState) => [...prevState, movie]);
   }
 
   useEffect(
@@ -316,6 +337,7 @@ export default function App() {
             <MovieDetails
               movieId={selectedMovieId}
               onMovieClose={handleMovieClose}
+              onAddWatchedMovie={handleAddWatchedMovie}
             />
           ) : (
             <>
