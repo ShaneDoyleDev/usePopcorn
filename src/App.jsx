@@ -163,7 +163,12 @@ function ErrorMessage({ message }) {
   );
 }
 
-function MovieDetails({ movieId, onMovieClose, onAddWatchedMovie }) {
+function MovieDetails({
+  movieId,
+  watchedMovies,
+  onMovieClose,
+  onAddWatchedMovie,
+}) {
   const [movie, setmovie] = useState({});
   const [userRating, setUserRating] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -180,6 +185,10 @@ function MovieDetails({ movieId, onMovieClose, onAddWatchedMovie }) {
     Director: director,
     Genre: genre,
   } = movie;
+
+  const previouslyRatedMovie = watchedMovies.find(
+    (watchedMovie) => watchedMovie.imdbID === movie.imdbID
+  );
 
   function handelAddMovie() {
     const newWatchedMovie = {
@@ -235,11 +244,17 @@ function MovieDetails({ movieId, onMovieClose, onAddWatchedMovie }) {
 
           <section>
             <div className="rating">
-              <StarRating maxRating={10} onSetRating={setUserRating} />
-              {userRating && (
-                <button className="btn-add" onClick={handelAddMovie}>
-                  + Add To List
-                </button>
+              {previouslyRatedMovie ? (
+                <p>⭐️ {previouslyRatedMovie.userRating} User Rating</p>
+              ) : (
+                <>
+                  <StarRating maxRating={10} onSetRating={setUserRating} />
+                  {userRating && (
+                    <button className="btn-add" onClick={handelAddMovie}>
+                      + Add To List
+                    </button>
+                  )}
+                </>
               )}
             </div>
             <p>
@@ -336,6 +351,7 @@ export default function App() {
           {selectedMovieId ? (
             <MovieDetails
               movieId={selectedMovieId}
+              watchedMovies={watchedMovies}
               onMovieClose={handleMovieClose}
               onAddWatchedMovie={handleAddWatchedMovie}
             />
