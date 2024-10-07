@@ -229,9 +229,9 @@ export default function App() {
   const [errorMessage, setErrorMessage] = useState("");
 
   function handleMovieSelect(movieId) {
-    movieId === selectedMovieId
-      ? setSelectedMovieId(null)
-      : setSelectedMovieId(movieId);
+    setSelectedMovieId((prevMovieId) =>
+      prevMovieId === movieId ? null : movieId
+    );
   }
 
   function handleMovieClose() {
