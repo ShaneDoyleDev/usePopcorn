@@ -90,7 +90,7 @@ function Search({ query, setQuery }) {
 
 function MovieList({ movies, onMovieClick }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
         <Movie key={movie.imdbID} movie={movie} onMovieClick={onMovieClick} />
       ))}
