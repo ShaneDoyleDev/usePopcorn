@@ -71,10 +71,10 @@ function Movie({ movie, onMovieSelect }) {
   );
 }
 
-function WatchedMoviesSummary({ watched }) {
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+function WatchedMoviesSummary({ watchedMovies }) {
+  const avgImdbRating = average(watchedMovies.map((movie) => movie.imdbRating));
+  const avgUserRating = average(watchedMovies.map((movie) => movie.userRating));
+  const avgRuntime = average(watchedMovies.map((movie) => movie.runtime));
 
   return (
     <div className="summary">
@@ -82,7 +82,7 @@ function WatchedMoviesSummary({ watched }) {
       <div>
         <p>
           <span>#️⃣</span>
-          <span>{watched.length} movies</span>
+          <span>{watchedMovies.length} movies</span>
         </p>
         <p>
           <span>⭐️</span>
@@ -101,10 +101,10 @@ function WatchedMoviesSummary({ watched }) {
   );
 }
 
-function WatchedMoviesList({ watched }) {
+function WatchedMoviesList({ watchedMovies }) {
   return (
     <ul className="list">
-      {watched.map((movie) => (
+      {watchedMovies.map((movie) => (
         <WatchedMovie key={movie.imdbID} movie={movie} />
       ))}
     </ul>
@@ -236,7 +236,7 @@ function MovieDetails({ movieId, onMovieClose }) {
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watchedMovies, setWatchedMovies] = useState([]);
   const [selectedMovieId, setSelectedMovieId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -249,6 +249,10 @@ export default function App() {
 
   function handleMovieClose() {
     setSelectedMovieId(null);
+  }
+
+  function handleAddWatchedMovies() {
+    setWatchedMovies();
   }
 
   useEffect(
@@ -315,8 +319,8 @@ export default function App() {
             />
           ) : (
             <>
-              <WatchedMoviesSummary watched={watched} />
-              <WatchedMoviesList watched={watched} />
+              <WatchedMoviesSummary watchedMovies={watchedMovies} />
+              <WatchedMoviesList watchedMovies={watchedMovies} />
             </>
           )}
         </Box>
