@@ -88,19 +88,23 @@ function Search({ query, setQuery }) {
   );
 }
 
-function MovieList({ movies }) {
+function MovieList({ movies, onMovieClick }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
-        <Movie key={movie.imdbID} movie={movie} />
+        <Movie key={movie.imdbID} movie={movie} onMovieClick={onMovieClick} />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie, onMovieClick }) {
   return (
-    <li>
+    <li
+      onClick={() => {
+        onMovieClick(movie.imdbID);
+      }}
+    >
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -205,12 +209,21 @@ function ErrorMessage({ message }) {
   );
 }
 
+function MovieDetails({ movieId }) {
+  return <div className="details">{movieId}</div>;
+}
+
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
+  const [selectedMovieId, setSelectedMovieId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  function handleMovieClick(selectedMovieId) {
+    setSelectedMovieId(selectedMovieId);
+  }
 
   useEffect(
     function () {
@@ -261,12 +274,22 @@ export default function App() {
             <ErrorMessage message={errorMessage} />
           )}
           {!isLoading && !errorMessage && (
-            <MovieList movies={movies} isLoading={isLoading} />
+            <MovieList
+              movies={movies}
+              isLoading={isLoading}
+              onMovieClick={handleMovieClick}
+            />
           )}
         </Box>
         <Box>
-          <WatchedMoviesSummary watched={watched} />
-          <WatchedMoviesList watched={watched} />
+          {selectedMovieId ? (
+            <MovieDetails movieId={selectedMovieId} />
+          ) : (
+            <>
+              <WatchedMoviesSummary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
