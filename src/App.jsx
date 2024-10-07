@@ -217,6 +217,12 @@ function MovieDetails({
   }
 
   useEffect(() => {
+    if (!title) return;
+    document.title = `Movie | ${title}`;
+    return () => (document.title = `usePopcorn`);
+  }, [title]);
+
+  useEffect(() => {
     async function getMovieDetails() {
       setIsLoading(true);
       const response = await fetch(
