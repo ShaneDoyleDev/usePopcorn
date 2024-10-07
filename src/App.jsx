@@ -361,7 +361,9 @@ export default function App() {
         return;
       }
 
+      handleMovieClose();
       fetchMovies();
+
       return () => controller.abort();
     },
     [query]
