@@ -301,7 +301,9 @@ function MovieDetails({
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watchedMovies, setWatchedMovies] = useState([]);
+  const [watchedMovies, setWatchedMovies] = useState(
+    () => JSON.parse(localStorage.getItem("watchedMovies")) || []
+  );
   const [selectedMovieId, setSelectedMovieId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -317,7 +319,7 @@ export default function App() {
   }
 
   function handleAddWatchedMovie(movie) {
-    setWatchedMovies((prevState) => [...prevState, movie]);
+    setWatchedMovies((prevWatchedMovies) => [...prevWatchedMovies, movie]);
   }
 
   function handleDeleteWatchedMovie(movieId) {
@@ -327,6 +329,10 @@ export default function App() {
       )
     );
   }
+
+  useEffect(() => {
+    localStorage.setItem("watchedMovies", JSON.stringify(watchedMovies));
+  }, [watchedMovies]);
 
   useEffect(
     function () {
