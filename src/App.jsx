@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import StarRating from "./StarRating";
 import useFetchMovies from "./useFetchMovies";
 import useLocalStorageState from "./useLocalStorageState";
+import useKeypress from "./useKeypress";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -35,18 +36,11 @@ function Logo() {
 function Search({ query, setQuery }) {
   const inputElement = useRef(null);
 
-  useEffect(() => {
-    function focusSearchInput(e) {
-      if (document.activeElement === inputElement.current) return;
-      if (e.key === "Enter") {
-        inputElement.current.focus();
-        setQuery("");
-      }
-    }
-    document.addEventListener("keydown", focusSearchInput);
+  useKeypress("Enter", function () {
+    if (document.activeElement === inputElement.current) return;
     inputElement.current.focus();
-    return () => document.removeEventListener("keydown", focusSearchInput);
-  }, [setQuery]);
+    setQuery("");
+  });
 
   return (
     <input
@@ -201,6 +195,7 @@ function MovieDetails({
   const [movie, setmovie] = useState({});
   const [userRating, setUserRating] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  useKeypress("Escape", onMovieClose);
 
   const ratingCountRef = useRef(0);
 
@@ -259,18 +254,6 @@ function MovieDetails({
     }
     getMovieDetails();
   }, [movieId]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") onMovieClose();
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [onMovieClose]);
 
   return (
     <div className="details">
